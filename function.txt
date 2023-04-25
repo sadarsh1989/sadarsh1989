@@ -1,0 +1,40 @@
+function parseInsSegment(insSegment) {
+  // Define regular expressions to extract data from the INS, NM1, N3, N4, and DMG segments
+  const insRegex = /INS\*([\w\*]+)\*([\w\*]+)\*([\w\*]+)\*([\w\*]+)\*([\w\*]+)\*([\w\*]+)\*([\w\*]+)\*([\w\*]+)\*([\w\*]+)\*/g; // Example regex for INS segment
+  const nm1Regex = /NM1\*([\w\*]+)\*([\w\*]+)\*([\w\*]+)\*([\w\*]+)\*([\w\*]+)\*([\w\*]+)\*([\w\*]+)\*([\w\*]+)\*([\w\*]+)\*([\w\*]+)\*/g; // Example regex for NM1 segment
+  const n3Regex = /N3\*([\w\*]+)\*([\w\*]+)\*/g; // Example regex for N3 segment
+  const n4Regex = /N4\*([\w\*]+)\*([\w\*]+)\*([\w\*]+)\*([\w\*]+)\*/g; // Example regex for N4 segment
+  const dmgRegex = /DMG\*([\w\*]+)\*([\w\*]+)\*([\w\*]+)\*([\w\*]+)\*/g; // Example regex for DMG segment
+
+  const insData = {};
+  // Extract data from the INS segment using the insRegex
+  const insMatch = insRegex.exec(insSegment);
+  if (insMatch) {
+    // Extract data from the regex groups and store in the insData object
+    insData.group1 = insMatch[1];
+    insData.group2 = insMatch[2];
+    insData.group3 = insMatch[3];
+    insData.group4 = insMatch[4];
+    insData.group5 = insMatch[5];
+    insData.group6 = insMatch[6];
+    insData.group7 = insMatch[7];
+    insData.group8 = insMatch[8];
+    insData.group9 = insMatch[9];
+    // Add more properties as needed based on your specific X12 format
+  }
+
+  // Extract data from the NM1 segment using the nm1Regex
+  const nm1Match = nm1Regex.exec(insSegment);
+  if (nm1Match) {
+    // Extract data from the regex groups and store in the insData object
+    insData.nm1Group1 = nm1Match[1];
+    insData.nm1Group2 = nm1Match[2];
+    insData.nm1Group3 = nm1Match[3];
+    insData.nm1Group4 = nm1Match[4];
+    insData.nm1Group5 = nm1Match[5];
+    insData.nm1Group6 = nm1Match[6];
+    insData.nm1Group7 = nm1Match[7];
+    insData.nm1Group8 = nm1Match[8];
+    insData.nm1Group9 = nm1Match[9];
+    insData.nm1Group10 = nm1Match[10];
+   
