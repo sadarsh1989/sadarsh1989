@@ -15,6 +15,7 @@ function parseInsSegment(insSegment) {
   // Define regular expressions to extract data from the INS segment
   const regexes = [
     /INS\*(\d+)\*(\w+)\*([\w\*]+)\*([\w\*]+)\*([\w\*]+)\*([\w\*]+)\*([\w\*]+)\*([\w\*]+)\*([\w\*]+)\*/g, // Example regex for INS segment
+    /INS\*([A-Za-z0-9]+)\*([\w\*]+)\*([\w\*]+)\*([\w\*]+)\*([\w\*]+)\*([\w\*]+)\*([\w\*]+)\*([\w\*]+)\*([\w\*]+)\*/g, // Another example regex for INS segment
     // Add more regular expressions as needed for your specific X12 format
   ];
 
