@@ -1,0 +1,58 @@
+// Import the File System module in Node.js
+const fs = require('fs');
+
+// Read the X12 file content from a local file
+const x12File = fs.readFileSync('path/to/x12file.txt', 'utf-8');
+
+// Split the X12 file by INS segment
+const insSegments = x12File.split(/INS\*/);
+
+// Create an empty JSON object to hold the INS segment data
+const json = {};
+
+// Define a function to parse the INS segment and convert it into an object
+function parseInsSegment(insSegment) {
+  // Define regular expressions to extract data from the INS segment
+  const regexes = [
+    /INS\*(\d+)\*(\w+)\*([\w\*]+)\*([\w\*]+)\*([\w\*]+)\*([\w\*]+)\*([\w\*]+)\*([\w\*]+)\*([\w\*]+)\*/g, // Example regex for INS segment
+    // Add more regular expressions as needed for your specific X12 format
+  ];
+
+  const insData = {};
+  // Loop through each regular expression and match against the INS segment
+  regexes.forEach((regex) => {
+    const match = regex.exec(insSegment);
+    if (match) {
+      // Extract data from the regex groups and store in the insData object
+      insData.group1 = match[1];
+      insData.group2 = match[2];
+      insData.group3 = match[3];
+      insData.group4 = match[4];
+      insData.group5 = match[5];
+      insData.group6 = match[6];
+      insData.group7 = match[7];
+      insData.group8 = match[8];
+      insData.group9 = match[9];
+      // Add more properties as needed based on your specific X12 format
+    }
+  });
+
+  return insData;
+}
+
+// Loop through each INS segment and process it as needed
+for (let i = 1; i < insSegments.length; i++) {
+  // Add 'INS' back to the beginning of each INS segment
+  const insSegment = 'INS*' + insSegments[i];
+
+  // Process the INS segment and convert it into an object
+  const insData = parseInsSegment(insSegment);
+
+  // Insert the INS data into the JSON object
+  json[`INS_${i}`] = insData;
+}
+
+// Write the JSON object to a new file
+fs.writeFileSync('path/to/ins_data.json', JSON.stringify(json, null, 2), 'utf-8');
+
+console.log('INS data has been written to ins_data.json file.');
