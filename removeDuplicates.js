@@ -1,29 +1,27 @@
 // Example input data with INS segments
-const fileData = [
-  "INS|1|N3|A|B",
-  "N3|C|D",
-  "INS|2|N3|E|F",
-  "N3|G|H",
-  "N3|C|D", // Duplicate N3 segment
-  "INS|3|N3|I|J",
-  "N3|K|L",
-  "N3|M|N",
-  "N3|O|P",
-  "INS|4|N3|Q|R",
-  "N3|Q|R",
-  "N3|S|T",
-  "INS|5|N3|U|V",
-  // ... more INS and N3 segments
-];
+const fileData = `INS*1*18*0*0*0*1~
+REF*0F*123456789~
+N3*1234 Elm St*Suite 567~
+N3*5678 Oak Rd~
+INS*2*18*0*0*0*2~
+REF*0F*987654321~
+N3*1234 Pine Ave~
+N3*5678 Birch Ln~
+N3*1234 Pine Ave~ // Duplicate N3 segment
+INS*3*18*0*0*0*3~
+REF*0F*987987987~
+N3*5678 Oak Rd~
+`;
 
 // Function to remove duplicate N3 segments under each INS segment
 function removeDuplicateN3Segments(fileData) {
   const insSegments = [];
+  const segments = fileData.split("~");
   let currentInsSegment = null;
 
   // Iterate through each segment in the file
-  for (const segment of fileData) {
-    const segmentFields = segment.split("|");
+  for (const segment of segments) {
+    const segmentFields = segment.split("*");
     const segmentIdentifier = segmentFields[0];
 
     // If segment is an INS segment, update currentInsSegment
@@ -52,12 +50,12 @@ function removeDuplicateN3Segments(fileData) {
   for (const insSegment of insSegments) {
     insSegment.n3Segments.forEach((n3Segment) => {
       // Remove duplicate N3 segments from fileData
-      const index = fileData.indexOf(n3Segment);
-      if (index !== -1) {
-        fileData.splice(index, 1);
-      }
+      fileData = fileData.replace(new RegExp(n3Segment.replace("*", "\\*"), "g"), "");
     });
   }
+
+  // Remove extra "~" characters caused by removed segments
+  fileData = fileData.replace(/~+/g, "~");
 
   return fileData;
 }
