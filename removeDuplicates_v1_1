@@ -50,14 +50,11 @@ function removeDuplicateN3Segments(fileData) {
   for (const insSegment of insSegments) {
     // Convert Set of unique N3 segments back to an array
     const uniqueN3Segments = Array.from(insSegment.n3Segments);
-    // Replace N3 segments in the fileData with unique N3 segments
+    // Replace N3 segments (including segment delimiter "~") in the fileData with empty string
     for (const n3Segment of uniqueN3Segments) {
-      fileData = fileData.replace(new RegExp(n3Segment.replace("*", "\\*"), "g"), "");
+      fileData = fileData.replace(new RegExp(`${n3Segment}~`, "g"), "");
     }
   }
-
-  // Remove extra "~" characters caused by removed segments
-  fileData = fileData.replace(/~+/g, "~");
 
   return fileData;
 }
