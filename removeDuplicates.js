@@ -1,64 +1,44 @@
-// Example input data with INS segments
-const fileData = `INS*1*18*0*0*0*1~
-REF*0F*123456789~
-N3*1234 Elm St*Suite 567~
-N3*5678 Oak Rd~
-INS*2*18*0*0*0*2~
-REF*0F*987654321~
-N3*1234 Pine Ave~
-N3*5678 Birch Ln~
-N3*1234 Pine Ave~ // Duplicate N3 segment
-INS*3*18*0*0*0*3~
-REF*0F*987987987~
-N3*5678 Oak Rd~
-`;
+const fs = require('fs');
 
-// Function to remove duplicate N3 segments under each INS segment
-function removeDuplicateN3Segments(fileData) {
-  const insSegments = [];
-  const segments = fileData.split("~");
-  let currentInsSegment = null;
+const fileContent = fs.readFileSync('/Users/sam/Coding/sample_edited.834', 'utf8');
 
-  // Iterate through each segment in the file
-  for (const segment of segments) {
-    const segmentFields = segment.split("*");
-    const segmentIdentifier = segmentFields[0];
+// Split the file into segments
+const segments = fileContent.split(/~\r?\n/);
 
-    // If segment is an INS segment, update currentInsSegment
-    if (segmentIdentifier === "INS") {
-      if (currentInsSegment) {
-        insSegments.push(currentInsSegment);
-      }
-      currentInsSegment = {
-        segment: segment,
-        n3Segments: new Set(), // Use Set to store unique N3 segments
-      };
-    }
+// Initialize an empty array to store the extracted data
+const extractedData = [];
 
-    // If segment is an N3 segment, add it to currentInsSegment's n3Segments set
-    if (segmentIdentifier === "N3" && currentInsSegment) {
-      currentInsSegment.n3Segments.add(segment);
-    }
+// Initialize a flag to determine whether to skip segments
+let skipSegments = false;
+
+// Loop over each segment
+for (let i = 0; i < segments.length; i++) {
+  const segment = segments[i];
+
+  // Extract the segment ID (e.g. INS, NM1, etc.)
+  const segmentId = segment.substring(0, 3);
+
+  // Check if the current segment is a DMG segment
+  if (segmentId === 'DMG') {
+    // Add the DMG segment to the extracted data array
+    extractedData.push(segment);
+
+    // Set the skipSegments flag to true to skip segments until the DTP segment is reached
+    skipSegments = true;
+  } else if (segmentId === 'DTP') {
+    // Add the DTP segment to the extracted data array
+    extractedData.push(segment);
+
+    // Set the skipSegments flag to false to include segments until the next DMG segment is reached
+    skipSegments = false;
+  } else if (!skipSegments) {
+    // Add the segment to the extracted data array if skipSegments is false
+    extractedData.push(segment);
   }
-
-  // Push the last INS segment after loop ends
-  if (currentInsSegment) {
-    insSegments.push(currentInsSegment);
-  }
-
-  // Iterate through each INS segment and remove duplicate N3 segments
-  for (const insSegment of insSegments) {
-    insSegment.n3Segments.forEach((n3Segment) => {
-      // Remove duplicate N3 segments from fileData
-      fileData = fileData.replace(new RegExp(n3Segment.replace("*", "\\*"), "g"), "");
-    });
-  }
-
-  // Remove extra "~" characters caused by removed segments
-  fileData = fileData.replace(/~+/g, "~");
-
-  return fileData;
 }
 
-const updatedFileData = removeDuplicateN3Segments(fileData);
-console.log(updatedFileData);
+// Join the extracted segments into a single string
+const outputContent = extractedData.join('~\r\n');
+
+// Write the modified content to a new file
+fs.writeFileSync('/Users/sam/Coding/output_edited.834', outputContent);
