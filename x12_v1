@@ -1,25 +1,32 @@
-// Example X12 834 file content
-const x12File = `ISA*00*          *00*          *ZZ*SENDERID      *ZZ*RECEIVERID    *210425*1545*U*00401*000000001*0*T*~
-GS*BE*SENDERID*RECEIVERID*20230425*1545*1*X*004010X096A1~
-ST*834*0001~
-HEADER_SEGMENT_1~
-HEADER_SEGMENT_2~
-INS*INS_SEGMENT_1~
-INS*INS_SEGMENT_2~
-INS*INS_SEGMENT_3~
-TRAILER_SEGMENT~
-SE*11*0001~
-GE*1*1~
-IEA*1*000000001~`;
+//This file takes the input from x12_parser.js file and removes any segments after DMG segment.
 
-// Split the X12 file by INS segment
-const insSegments = x12File.split(/\r?\nINS\*/);
+const fs = require('fs');
+const csv = require('csv-parser');
 
-// Loop through each INS segment and process it as needed
-for (let i = 1; i < insSegments.length; i++) {
-  // Add 'INS' back to the beginning of each INS segment
-  const insSegment = 'INS*' + insSegments[i];
+const filePath = Buffer.from('/Users/SamuelAdarshDarla/Desktop/coding/project_mirth/js/test_123.csv'); // Replace with your CSV file path
+const delimiter = '~NM1*QD*'; // Replace with your CSV delimiter
+const columnName = 'msg'; // Replace with the name of the column to modify
 
-  // Process the INS segment, e.g., parse it or perform some other operation
-  console.log(`INS Segment ${i}:`, insSegment);
-}
+fs.createReadStream(filePath)
+  .pipe(csv({delimiter}))
+  .on('data', row => {
+    const value = row[columnName];
+    const index = value.indexOf(delimiter);
+    const newValue = index >= 0 ? value.substring(0, index) : value; // Keep everything before the delimiter, or the entire string if the delimiter is not found
+    row[columnName] = newValue; // Update the value of the column
+    // Do something with the modified row (e.g. write it to a new CSV file)
+    console.log(row);
+
+	//fs.writeFileSync('/Users/SamuelAdarshDarla/Desktop/coding/project_mirth/js/test_output_123.txt',row,'utf-8');
+	  // Write data in 'Output.txt' .
+	  // fs.writeFile('/Users/SamuelAdarshDarla/Desktop/coding/project_mirth/js/test_output_123.txt', row, 'utf8',(err) => {
+          
+    //     // In case of a error throw err.
+    //     if (err) throw err;
+    // })
+
+  })
+  .on('end', () => {
+    console.log('CSV file successfully processed.');
+  });
+  
