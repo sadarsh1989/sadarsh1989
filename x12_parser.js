@@ -1,3 +1,4 @@
+//This file converts the eid 834 file to individual INS segments
 const fs = require('fs');
 const { stdout } = require('process');
 //const csv = require('csv-parser');
